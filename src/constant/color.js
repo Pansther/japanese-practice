@@ -5,8 +5,10 @@ export default [
     'royalblue',
     'deepskyblue',
     'limegreen',
-    'goldenrod',
+    'gold',
     'orange',
+    'salmon',
     'tomato',
+    'deeppink',
     'pink',
 ]

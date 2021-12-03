@@ -1,12 +1,11 @@
 <script type="ts">
     import cx from 'classnames'
     import random from 'lodash/random'
-    import repeat from 'lodash/repeat'
-    import isEmpty from 'lodash/isEmpty'
+
+    import DrawBoard from '../draw_board/index.svelte'
 
     import alphaData from '../../constant/alpha.js'
     import colors from '../../constant/color.js'
-    import instructions from '../../constant/instruction.js'
 
     let alphaNum: number = 0
     let brushColor: string = colors?.[0]
@@ -51,15 +50,6 @@
             ? ++alphaNum
             : alphaNum
         doRerender++
-    }
-
-    function hover(e) {
-        if (isCanDraw) {
-            e.target.style.background = brushColor
-        }
-        if (isCanErase) {
-            e.target.style.background = 'unset'
-        }
     }
 
     window.addEventListener('keydown', (event) => {
@@ -122,44 +112,20 @@
         </div>
     </div>
 
-    <div class="drawing_container">
-        {#await forceUpdate(doRerender) then _}
-            <div
-                class={cx('drawing', {
-                    ['hide_background']: !isCanShowBg && !isCanShowBgToggle,
-                })}
-                style={`background-image: url(https://www.nhk.or.jp/lesson/assets/images/letters/detail/hira/${randomAlpha}.png);`}
-                on:click={() => doRerender++}
-            >
-                {#each repeat(' ', 60) as div}
-                    <div class="row">
-                        {#each repeat(' ', 40) as div}
-                            <div class="column" on:mouseover={hover} />
-                        {/each}
-                    </div>
-                {/each}
-            </div>
-        {/await}
-        <div class="instruction_box">
-            <div>
-                {#each instructions?.hold as ins}
-                    <span>{ins}</span>
-                {/each}
-            </div>
-            <div>
-                {#each instructions?.press as ins}
-                    <span>{ins}</span>
-                {/each}
-            </div>
-            <div>
-                {#each instructions?.click as ins}
-                    <span>{ins}</span>
-                {/each}
-            </div>
+    {#await forceUpdate(doRerender) then _}
+        <div on:click={() => doRerender++}>
+            <DrawBoard
+                {brushColor}
+                {isCanDraw}
+                {isCanErase}
+                {isCanShowBg}
+                {isCanShowBgToggle}
+                {randomAlpha}
+            />
         </div>
-    </div>
+    {/await}
 
-    <div>
+    <div class="palette_box">
         {#each colors as color}
             <div
                 class="palette"
@@ -220,46 +186,10 @@
         }
     }
 
-    .drawing_container {
+    .palette_box {
         display: flex;
         flex-direction: column;
-        gap: 10px;
-
-        .drawing {
-            display: grid;
-            user-select: none;
-            background-position: center;
-            background-size: contain;
-
-            justify-content: center;
-            grid-template-columns: repeat(60, 10px);
-
-            .row {
-                max-width: 400px;
-
-                .column {
-                    max-width: 10px;
-                    height: 10px;
-                    border: 1px solid rgba($color: #000000, $alpha: 0.1);
-                }
-            }
-        }
-
-        .instruction_box {
-            display: flex;
-            justify-content: flex-start;
-            gap: 30px;
-
-            div {
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
-    }
-
-    .hide_background {
-        background-image: none !important;
+        align-self: flex-start;
     }
 
     .palette {

@@ -20,6 +20,7 @@
         text-transform: uppercase;
         font-size: 4em;
         font-weight: 100;
+        margin-top: 0;
     }
 
     @media (min-width: 640px) {
