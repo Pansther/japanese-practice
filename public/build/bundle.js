@@ -3064,31 +3064,45 @@ var app = (function () {
     	return block;
     }
 
-    // (189:16) {:else}
+    // (189:20) {:else}
     function create_else_block(ctx) {
-    	let button;
+    	let button0;
+    	let t1;
+    	let button1;
     	let mounted;
     	let dispose;
 
     	const block = {
     		c: function create() {
-    			button = element("button");
-    			button.textContent = "restart";
-    			add_location(button, file$1, 189, 20, 6437);
+    			button0 = element("button");
+    			button0.textContent = "exit";
+    			t1 = space();
+    			button1 = element("button");
+    			button1.textContent = "restart";
+    			add_location(button0, file$1, 189, 20, 6441);
+    			add_location(button1, file$1, 190, 20, 6504);
     		},
     		m: function mount(target, anchor) {
-    			insert_dev(target, button, anchor);
+    			insert_dev(target, button0, anchor);
+    			insert_dev(target, t1, anchor);
+    			insert_dev(target, button1, anchor);
 
     			if (!mounted) {
-    				dispose = listen_dev(button, "click", /*restartPractice*/ ctx[19], false, false, false);
+    				dispose = [
+    					listen_dev(button0, "click", /*goNormal*/ ctx[18], false, false, false),
+    					listen_dev(button1, "click", /*restartPractice*/ ctx[19], false, false, false)
+    				];
+
     				mounted = true;
     			}
     		},
     		p: noop,
     		d: function destroy(detaching) {
-    			if (detaching) detach_dev(button);
+    			if (detaching) detach_dev(button0);
+    			if (detaching) detach_dev(t1);
+    			if (detaching) detach_dev(button1);
     			mounted = false;
-    			dispose();
+    			run_all(dispose);
     		}
     	};
 
@@ -3096,7 +3110,7 @@ var app = (function () {
     		block,
     		id: create_else_block.name,
     		type: "else",
-    		source: "(189:16) {:else}",
+    		source: "(189:20) {:else}",
     		ctx
     	});
 
@@ -3186,7 +3200,7 @@ var app = (function () {
     	return block;
     }
 
-    // (196:43)           <div on:click={next}
+    // (197:43)           <div on:click={next}
     function create_then_block(ctx) {
     	let div;
     	let drawboard;
@@ -3210,7 +3224,7 @@ var app = (function () {
     		c: function create() {
     			div = element("div");
     			create_component(drawboard.$$.fragment);
-    			add_location(div, file$1, 196, 8, 6616);
+    			add_location(div, file$1, 197, 8, 6683);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -3253,7 +3267,7 @@ var app = (function () {
     		block,
     		id: create_then_block.name,
     		type: "then",
-    		source: "(196:43)           <div on:click={next}",
+    		source: "(197:43)           <div on:click={next}",
     		ctx
     	});
 
@@ -3282,7 +3296,7 @@ var app = (function () {
     	return block;
     }
 
-    // (210:8) {#each colors as color}
+    // (211:8) {#each colors as color}
     function create_each_block(ctx) {
     	let div;
     	let mounted;
@@ -3297,7 +3311,7 @@ var app = (function () {
     			div = element("div");
     			attr_dev(div, "class", "palette svelte-h5libe");
     			attr_dev(div, "style", `background: ${/*color*/ ctx[27]};`);
-    			add_location(div, file$1, 210, 12, 6975);
+    			add_location(div, file$1, 211, 12, 7042);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -3321,7 +3335,7 @@ var app = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(210:8) {#each colors as color}",
+    		source: "(211:8) {#each colors as color}",
     		ctx
     	});
 
@@ -3466,7 +3480,7 @@ var app = (function () {
     			attr_dev(div7, "class", "hiragana_container svelte-h5libe");
     			add_location(div7, file$1, 140, 4, 4318);
     			attr_dev(div8, "class", "palette_box svelte-h5libe");
-    			add_location(div8, file$1, 208, 4, 6903);
+    			add_location(div8, file$1, 209, 4, 6970);
     			attr_dev(div9, "class", "sandbox svelte-h5libe");
     			add_location(div9, file$1, 139, 0, 4291);
     		},

@@ -191,7 +191,8 @@
                     <div>
                         <button on:click={goNormal}>cancel</button>
                     </div>
-                {:else}
+                    {:else}
+                    <button on:click={goNormal}>exit</button>
                     <button on:click={restartPractice}>restart</button>
                 {/if}
             </div>
