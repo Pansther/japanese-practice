@@ -2,14 +2,15 @@
     import cx from 'classnames'
     import repeat from 'lodash/repeat'
 
-    import instructions from '../../constant/instruction.js'
-
+    export let isDisplayInstruction: boolean = true
+    export let alphaType = 'hira'
     export let brushColor
     export let isCanDraw
     export let isCanErase
     export let isCanShowBg
     export let isCanShowBgToggle
     export let randomAlpha
+    export let instructions
 
     function hover(e) {
         if (isCanDraw) {
@@ -26,7 +27,7 @@
         class={cx('drawing', {
             ['hide_background']: !isCanShowBg && !isCanShowBgToggle,
         })}
-        style={`background-image: url(https://www.nhk.or.jp/lesson/assets/images/letters/detail/hira/${randomAlpha}.png);`}
+        style={`background-image: url(https://www.nhk.or.jp/lesson/assets/images/letters/detail/${alphaType}/${randomAlpha}.png);`}
     >
         {#each repeat(' ', 60) as div}
             <div class="row">
@@ -36,15 +37,17 @@
             </div>
         {/each}
     </div>
-    <div class="instruction_box">
-        {#each Object.keys(instructions) as key}
-            <div>
-                {#each instructions[key] as ins}
-                    <span>{ins}</span>
-                {/each}
-            </div>
-        {/each}
-    </div>
+    {#if isDisplayInstruction && instructions}
+        <div class="instruction_box">
+            {#each Object?.keys(instructions) as key}
+                <div>
+                    {#each instructions?.[key] as ins}
+                        <span>{ins}</span>
+                    {/each}
+                </div>
+            {/each}
+        </div>
+    {/if}
 </div>
 
 <style lang="scss">

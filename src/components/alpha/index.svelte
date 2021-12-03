@@ -8,6 +8,7 @@
     import DrawBoard from '../draw_board/index.svelte'
 
     import alphaData from '../../constant/alpha.js'
+    import instructions from '../../constant/instruction.js'
     import colors from '../../constant/color.js'
 
     let alphaNum: number = 0
@@ -17,6 +18,7 @@
     let isCanShowBg: boolean = false
     let isCanShowBgToggle: boolean = false
     let mode: 'normal' | 'practice' = 'normal'
+    let alphaType: 'hira' | 'kana' = 'hira'
 
     $: randomAlpha =
         alphaData?.[parseInt(`${alphaNum / 5}`, 10)]?.[alphaNum % 5] ||
@@ -159,6 +161,13 @@
                 {/each}
             </div>
         {/await}
+        <div class="type_box">
+            type: {alphaType}
+            <div>
+                <button on:click={() => { alphaType = 'hira' }}>hiragana</button>
+                <button on:click={() => { alphaType = 'kana' }}>katakana</button>
+            </div>
+        </div>
         <div class="random_container">
             {#if mode === 'practice'}
                 <span>remaining: {practiceAlpha?.length}</span>
@@ -191,7 +200,7 @@
                     <div>
                         <button on:click={goNormal}>cancel</button>
                     </div>
-                    {:else}
+                {:else}
                     <button on:click={goNormal}>exit</button>
                     <button on:click={restartPractice}>restart</button>
                 {/if}
@@ -208,6 +217,8 @@
                 {isCanShowBg}
                 {isCanShowBgToggle}
                 {randomAlpha}
+                {alphaType}
+                {instructions}
             />
         </div>
     {/await}
@@ -262,6 +273,24 @@
 
         .match {
             background: lightpink;
+        }
+    }
+
+    .type_box {
+        display: flex;
+        justify-self: flex-start;
+        align-items: center;
+        margin: 20px 0 -30px 20px;
+        gap: 10px;
+        
+        div {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        input {
+            margin: 0;
         }
     }
 
