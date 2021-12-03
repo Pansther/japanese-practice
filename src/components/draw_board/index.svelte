@@ -31,7 +31,7 @@
         {#each repeat(' ', 60) as div}
             <div class="row">
                 {#each repeat(' ', 40) as div}
-                    <div class="column" on:mouseover={hover} />
+                    <div class="column" on:mousemove={hover} />
                 {/each}
             </div>
         {/each}
@@ -69,6 +69,10 @@
                     max-width: 10px;
                     height: 10px;
                     border: 1px solid rgba($color: #000000, $alpha: 0.1);
+
+                    &:hover {
+                        background: lightgray;
+                    }
                 }
             }
         }

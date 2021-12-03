@@ -3,15 +3,15 @@
 </script>
 
 <main>
-    <h1>Japanese Practice v0.1</h1>
+    <h1>Japanese Practice v0.2</h1>
     <Alpha />
 </main>
 
 <style>
     main {
         text-align: center;
-        padding: 1em;
         max-width: 240px;
+        padding-bottom: 2em;
         margin: 0 auto;
     }
 

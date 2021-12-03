@@ -1,6 +1,9 @@
 <script type="ts">
     import cx from 'classnames'
     import random from 'lodash/random'
+    import times from 'lodash/times'
+    import shuffle from 'lodash/shuffle'
+    import takeRight from 'lodash/takeRight'
 
     import DrawBoard from '../draw_board/index.svelte'
 
@@ -13,13 +16,26 @@
     let isCanErase: boolean = false
     let isCanShowBg: boolean = false
     let isCanShowBgToggle: boolean = false
+    let mode: 'normal' | 'practice' = 'normal'
 
     $: randomAlpha =
         alphaData?.[parseInt(`${alphaNum / 5}`, 10)]?.[alphaNum % 5] ||
         randomAlpha
 
+    $: practiceAlpha =
+        mode === 'practice'
+            ? shuffle(
+                  times(50, 0)?.filter((num) => ![36, 38, 46, 48].includes(num))
+              )
+            : []
+    $: {
+        alphaNum = mode === 'practice' ? practiceAlpha[0] : alphaNum
+    }
+
     const forceUpdate = async (_) => {}
+    const forceUpdateTable = async (_) => {}
     let doRerender = 0
+    let doRerenderTable = 0
 
     function prevAlpha() {
         if (--alphaNum < 0) alphaNum = 0
@@ -35,8 +51,10 @@
     }
 
     function setAlpha(row, col) {
-        alphaNum = row * 5 + col
-        doRerender++
+        if (mode === 'normal') {
+            alphaNum = row * 5 + col
+            doRerender++
+        }
     }
 
     function getNewAlpha() {
@@ -50,6 +68,37 @@
             ? ++alphaNum
             : alphaNum
         doRerender++
+    }
+
+    function nextPractice() {
+        if (practiceAlpha?.length) {
+            document.querySelector<HTMLElement>(
+                `#hiragana-${alphaNum}`
+            ).style.background = 'lightskyblue'
+            practiceAlpha = takeRight(practiceAlpha, practiceAlpha?.length - 1)
+            alphaNum = practiceAlpha[1]
+            doRerender++
+        }
+    }
+
+    function goPractice() {
+        mode = 'practice'
+    }
+
+    function goNormal() {
+        mode = 'normal'
+        doRerenderTable++
+    }
+
+    function restartPractice() {
+        mode = 'normal'
+        mode = 'practice'
+        doRerenderTable++
+    }
+
+    function next() {
+        if (mode === 'normal') nextAlpha()
+        if (mode === 'practice') nextPractice()
     }
 
     window.addEventListener('keydown', (event) => {
@@ -67,10 +116,19 @@
                 isCanShowBgToggle = !isCanShowBgToggle
                 break
             case 'KeyQ':
-                prevAlpha()
+                if (mode === 'normal') prevAlpha()
+                break
+            case 'KeyW':
+                if (mode === 'normal') getNewAlpha()
+                if (mode === 'practice') nextPractice()
                 break
             case 'KeyE':
-                nextAlpha()
+                if (mode === 'normal') nextAlpha()
+                if (mode === 'practice') nextPractice()
+                break
+            case 'Space':
+                event.preventDefault()
+                doRerender++
                 break
             default:
                 break
@@ -86,34 +144,62 @@
 
 <div class="sandbox">
     <div class="hiragana_container">
-        <div class="table">
-            {#each alphaData as alphaList, row}
-                <div class="column">
-                    {#each alphaList as al, col}
-                        <span
-                            class={cx({ ['match']: al === randomAlpha })}
-                            on:click={() => setAlpha(row, col)}>{al}</span
-                        >
-                    {/each}
-                </div>
-            {/each}
-        </div>
-        <div class="random_container">
-            <div style={`color: ${brushColor};`}>
-                <h1>{randomAlpha}</h1>
+        {#await forceUpdateTable(doRerenderTable) then _}
+            <div class="table">
+                {#each alphaData as alphaList, row}
+                    <div class="column">
+                        {#each alphaList as al, col}
+                            <span
+                                class={cx({ ['match']: al === randomAlpha })}
+                                id={`hiragana-${row * 5 + col}`}
+                                on:click={() => setAlpha(row, col)}>{al}</span
+                            >
+                        {/each}
+                    </div>
+                {/each}
             </div>
-            <div>
+        {/await}
+        <div class="random_container">
+            {#if mode === 'practice'}
+                <span>remaining: {practiceAlpha?.length}</span>
+            {/if}
+            <div style={`color: ${brushColor};`}>
+                {#if mode === 'normal' || (mode === 'practice' && practiceAlpha?.length)}
+                    <h1>{randomAlpha}</h1>
+                {/if}
+                {#if mode === 'practice' && !practiceAlpha?.length}
+                    <h2>Practice Complete</h2>
+                {/if}
+            </div>
+            <div class={cx({ ['hide']: mode !== 'normal' })}>
                 <div>
                     <button on:click={prevAlpha}>prev</button>
                     <button on:click={nextAlpha}>next</button>
                 </div>
-                <button on:click={getNewAlpha}>random</button>
+                <div>
+                    <button on:click={getNewAlpha}>random</button>
+                </div>
+                <div>
+                    <button on:click={goPractice}>go practice</button>
+                </div>
+            </div>
+            <div class={cx({ ['hide']: mode !== 'practice' })}>
+                {#if practiceAlpha?.length}
+                    <div>
+                        <button on:click={nextPractice}>next</button>
+                    </div>
+                    <div>
+                        <button on:click={goNormal}>cancel</button>
+                    </div>
+                {:else}
+                    <button on:click={restartPractice}>restart</button>
+                {/if}
             </div>
         </div>
     </div>
 
     {#await forceUpdate(doRerender) then _}
-        <div on:click={() => doRerender++}>
+        <div on:click={next}>
             <DrawBoard
                 {brushColor}
                 {isCanDraw}
@@ -142,6 +228,10 @@
         justify-content: center;
         align-items: center;
         gap: 50px;
+
+        .hide {
+            display: none;
+        }
     }
 
     .hiragana_container {
@@ -161,10 +251,11 @@
             span {
                 min-width: 60px;
                 padding: 2.5px 0;
-            }
 
-            &:hover {
-                cursor: pointer;
+                &:hover {
+                    background: lightgray;
+                    cursor: pointer;
+                }
             }
         }
 
@@ -182,6 +273,12 @@
 
         h1 {
             font-size: 5rem;
+            margin: 0;
+        }
+
+        h2 {
+            color: limegreen;
+            font-size: 2rem;
             margin: 0;
         }
     }
